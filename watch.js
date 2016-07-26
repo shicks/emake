@@ -17,7 +17,7 @@ class Watch {
 
   handle(file, event) {
     if (event == 'change') {
-      callback(file);
+      this.callback(file);
     } else if (event == 'rename') {
       this.missing.add(file);
       if (!this.timeout) {
