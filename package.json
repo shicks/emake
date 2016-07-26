@@ -1,0 +1,11 @@
+{
+  "name": "emake",
+  "version": "1.0.0",
+  "description": "Replacement for gnu make that watches dependencies and automatically remakes.",
+  "main": "emake.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stephen Hicks <stephenhicks@gmail.com>",
+  "license": "ISC"
+}
