@@ -21,6 +21,7 @@ function start(deps) {
         targets.add(target);
       }
     }
+    console.error('Rebuilding ' + [...targets].join(' '));
     return make.make(targets);
   }, 25));
 }
