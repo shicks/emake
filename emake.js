@@ -10,20 +10,11 @@ const make = require('./make');
 const {debounce} = require('./debounce');
 const {watch} = require('./watch');
 
-
-//// TODO - for some reason, we're getting two modified events
-//// for each touch...?!?
-
-////  --- it appears that a second 'change' event is coming in?!?
-////  --- we could check the modtime and/or keep a checksum...
-
-////  -- keep a cache of modtimes in Watch
-
-
 /**
  * @param {!Map<string, !Set<string>>} deps
  */
 function start(deps) {
+  console.error('Watching\n  ' + [...deps.keys()].join('\n  '));
   watch(deps.keys(), debounce(function(modified) {
     const targets = new Set();
     for (const file of modified) {
@@ -40,6 +31,9 @@ function start(deps) {
 
 
 // TODO(sdh): also kick off an initial make...?
+// TODO(sdh): `make -pn` to find out phony targets
+//   - expand them one level before anything else...
+//   - that way 'emake all' only remakes what's needed.
 
 
 Promise.all(process.argv.slice(2).map(make.getDeps)).then(results => {
@@ -51,4 +45,8 @@ Promise.all(process.argv.slice(2).map(make.getDeps)).then(results => {
     }
   }
   start(deps);
+}, err => {
+  console.error(
+      'Failed to get dependencies for ' + process.argv.slice(2).join(' '));
+  process.exit(1);
 });
