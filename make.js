@@ -14,7 +14,7 @@ const {exec} = require('child_process');
  */
 function make(targets) {
   return new Promise((resolve, reject) => {
-    const quoted = targets.map(target => target.replace("'", "'\\''"));
+    const quoted = [...targets].map(target => target.replace("'", "'\\''"));
     exec("make '" + quoted.join("' '") + "'",
          (err, stdout, stderr) => {
            err ? reject(new Error('Make failed: ' + err)) : resolve();

@@ -6,6 +6,21 @@
 
 const fs = require('fs');
 
+function debouncedWatch(file, callback) {
+  let mtime = 0;
+  fs.watch(file, (event) => {
+    if (event == 'rename') {
+      callback(event);
+    } else {
+      fs.stat(file, (err, stat) => {
+        const newMtime = stat ? Number(stat.mtime) : 0;
+        if (newMtime > mtime) callback(event);
+        mtime = newMtime;
+      });
+    }
+  });
+}
+
 class Watch {
   constructor(
       /** function(string) */ callback, /** !Iterable<string>} */ files) {
@@ -21,7 +36,7 @@ class Watch {
     } else if (event == 'rename') {
       this.missing.add(file);
       if (!this.timeout) {
-        setTimeout(() => this.check(true), 1000);
+        setTimeout(() => { this.check(true); }, 1000);
         this.timeout = true;
       }
     }
@@ -33,14 +48,14 @@ class Watch {
     this.missing.clear();
     for (const file of files) {
       try {
-        fs.watch(file, (event) => this.handle(file, event));
+        debouncedWatch(file, (event) => { this.handle(file, event); });
         if (fire) this.callback(file);
       } catch (err) {
         this.missing.add(file);
       }
     }
     if (this.missing.size) {
-      setTimeout(() => this.check(true), 1000);
+      setTimeout(() => { this.check(true); }, 1000);
       this.timeout = true;
     }
   }

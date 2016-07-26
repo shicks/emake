@@ -14,8 +14,14 @@ function debounce(callback, delay) {
   let items = new Set();
 
   function trigger() {
+    (callback(items) || Promise.resolve()).then(() => {
+      if (items.size) {
+        setTimeout(trigger, delay);
+      } else {
+        timeout = false;
+      }
+    });
     items = new Set();
-    (callback(items) || Promise.resolve()).then(() => { timeout = false; });
   }
 
   return function(item) {
